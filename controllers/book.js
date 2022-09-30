@@ -1,7 +1,7 @@
 const axios = require('axios')
 const db = require('../models')
 
-const { Book, Favorite } = db
+const { Book, UserBook } = db
 
 const URL = 'https://www.googleapis.com/books/v1/volumes'
 const API_KEY = process.env.API_KEY
@@ -61,21 +61,25 @@ async function saveBook(req, res) {
             link: data.volumeInfo.canonicalVolumeLink
         }
     })
+    const [match, added] = await UserBook.findOrCreate({
+        where: {
+            bookId: foundBook.bookId,
+            userId: req.user.userId
+        },
+        bookId: foundBook.bookId,
+        userId: req.user.userId
+    })
 
-    if (savedBook) {
-        res.json({message: "Book saved"})
-    }else if(foundBook){
-        console.log(foundBook.bookId)
+    if (savedBook || added) {
+        res.json({ message: "Book saved" })
+    } else if (foundBook || match) {
         res.json({
-            message: "Book found",
-            data: foundBook
+            message: "Book already saved",
         })
     }
 
-//    Favorite.create({
-//         bookId : foundbook.bookId
-            // userId : req.currentUser.userId
-//     })
+
+
 
 
 
