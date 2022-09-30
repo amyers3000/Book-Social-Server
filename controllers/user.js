@@ -1,24 +1,22 @@
+const db = require('../models')
+const bcrypt = require('bcrypt')
 
+const { User } =db
 
-function signIn(req, res){
-
+async function signUp(req, res){
+    let { password, ...rest } = req.body
+    console.log(password)
+    const user = await User.create({
+        ...rest,
+        password_digest: await bcrypt.hash(password, 10)
+    })
+    res.json(user)
 }
 
-function logIn(req, res){
-
-}
-
-function showAllUsers(req, res){
-
-}
-
-function showUser(req, res){
-
-}
-
-function deleteUser(req, res){
-
+async function showAllUsers(req, res){
+    const users = await User.findAll()
+    res.json(users)
 }
 
 
-module.exports = { signIn, logIn, showAllUsers, showUser, deleteUser }
+module.exports = { signUp, showAllUsers }

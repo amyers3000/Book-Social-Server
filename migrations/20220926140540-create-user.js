@@ -24,6 +24,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
+      username: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
       password_digest: {
         type: Sequelize.STRING,
         allowNull:false
