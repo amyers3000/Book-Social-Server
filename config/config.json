@@ -2,21 +2,21 @@
   "development": {
     "username": "amyers6",
     "password": "Doggy24!",
-    "database": "Books",
+    "database": "BookClub",
     "host": "127.0.0.1",
     "dialect": "postgres"
   },
   "test": {
     "username": "amyers6",
     "password": "Doggy24!",
-    "database": "Books",
+    "database": "BookClub",
     "host": "127.0.0.1",
     "dialect": "postgres"
   },
   "production": {
     "username": "amyers6",
     "password": "Doggy24!",
-    "database": "Books",
+    "database": "BookClub",
     "host": "127.0.0.1",
     "dialect": "postgres"
   }

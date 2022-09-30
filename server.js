@@ -15,16 +15,16 @@ app.use(
 
 // Routes
 const bandRoute = require('./routes/book')
-app.use('/search', bandRoute)
+app.use('/books', bandRoute)
 
 const favoriteRoute = require('./routes/favorite')
-app.use('/favorite', favoriteRoute)
+app.use('/favorites', favoriteRoute)
 
 const userRoute = require('./routes/user')
-app.use('/user', userRoute)
+app.use('/users', userRoute)
 
 const commentRoute = require('./routes/comment')
-app.use('/comment', commentRoute)
+app.use('/comments', commentRoute)
 
 
 PORT = process.env.PORT || 8080

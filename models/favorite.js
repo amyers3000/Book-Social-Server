@@ -20,18 +20,17 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true
     },
     userId: {
-      type: DataTypes.INTEGR,
+      type: DataTypes.SMALLINT,
       allowNull: false
     },
     bookId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.SMALLINT,
       allowNull: false
     }
   }, {
     sequelize,
     modelName: 'Favorite',
-    tableName: 'favorite',
-    timestamps: false
+    tableName: 'favorites',
   });
   return Favorite;
 };

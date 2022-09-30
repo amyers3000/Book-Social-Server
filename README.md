@@ -1,4 +1,4 @@
-# The Book Club
+# The Book Club - Server
 
 A social media application that brings book lovers together. The goal of this applicaiton is to not only connect people online but in person as well. The site features:
 

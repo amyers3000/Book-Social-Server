@@ -1,18 +1,20 @@
 'use strict';
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Favorites', {
-      id: {
+    await queryInterface.createTable('favorites', {
+      favoriteId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
       userId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.SMALLINT,
+        allowNull:false
       },
       bookId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.SMALLINT,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,
@@ -25,6 +27,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Favorites');
+    await queryInterface.dropTable('favorites');
   }
 };

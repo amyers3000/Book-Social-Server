@@ -1,9 +1,9 @@
+const db = require('../models/index')
+const { Favorite, Book } = db
 
-
-function showAllFavorites(req, res){
-
+async function showAllFavorites(req, res){
+    
 }
-
 function showFavorite(req, res){
 
 }

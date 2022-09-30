@@ -27,22 +27,21 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement:true
     },
     userId: {
-      type:DataTypes.INTEGER,
+      type:DataTypes.SMALLINT,
       allowNull:false
     },
     bookId: {
-      type:DataTypes.INTEGER,
+      type:DataTypes.SMALLINT,
       allowNull:false
     },
     content: {
-      type:DataTypes.INTEGER,
+      type:DataTypes.TEXT,
       allowNull:false
     }
   }, {
     sequelize,
     modelName: 'Comment',
-    tableName: 'comment',
-    timestamps: false
+    tableName: 'comments',
   });
   return Comment;
 };
