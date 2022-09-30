@@ -1,6 +1,6 @@
 # The Book Club
 
-A social media application that brings book lovers together. The goal of this applicaiton is to not only bring people together online but in person as well. The site features:
+A social media application that brings book lovers together. The goal of this applicaiton is to not only connect people online but in person as well. The site features:
 
 -An authentication and authorization feature that allows users to create accounts and sign in
 
