@@ -17,7 +17,7 @@ app.use(
 const bandRoute = require('./routes/book')
 app.use('/books', bandRoute)
 
-const favoriteRoute = require('./routes/favorite')
+const favoriteRoute = require('./routes/userbook')
 app.use('/favorites', favoriteRoute)
 
 const userRoute = require('./routes/user')

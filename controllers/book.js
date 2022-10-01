@@ -26,9 +26,8 @@ async function searchBooks(req, res) {
 }
 
 async function refinedBookSearch(req, res) {
+    let { title, author } = req.params
     try {
-        let { title, author } = req.params
-
         let response = await axios.get(`${URL}?q=intitle:${title}+inauthor:${author}&${API_KEY}&maxResults=5`)
         data = response.data.items
         if (data) {
@@ -45,48 +44,41 @@ async function refinedBookSearch(req, res) {
 
 
 async function saveBook(req, res) {
-    let { id } = req.params
-    let response = await axios.get(`${URL}/${id}?${API_KEY}`)
-    data = response.data
+    try {
+        let { id } = req.params
+        let response = await axios.get(`${URL}/${id}?${API_KEY}`)
+        data = response.data
 
-
-
-    const [foundBook, savedBook] = await Book.findOrCreate({
-        where: { title: data.volumeInfo.title },
-        defaults: {
-            title: data.volumeInfo.title,
-            image: data.volumeInfo.imageLinks.thumbnail,
-            authors: data.volumeInfo.authors[0],
-            description: data.volumeInfo.description,
-            link: data.volumeInfo.canonicalVolumeLink
-        }
-    })
-    const [match, added] = await UserBook.findOrCreate({
-        where: {
+        const [foundBook, savedBook] = await Book.findOrCreate({
+            where: { title: data.volumeInfo.title },
+            defaults: {
+                title: data.volumeInfo.title,
+                image: data.volumeInfo.imageLinks.thumbnail,
+                authors: data.volumeInfo.authors[0],
+                description: data.volumeInfo.description,
+                link: data.volumeInfo.canonicalVolumeLink,
+            }
+        })
+        const [match, added] = await UserBook.findOrCreate({
+            where: {
+                bookId: foundBook.bookId,
+                userId: req.user.userId
+            },
             bookId: foundBook.bookId,
             userId: req.user.userId
-        },
-        bookId: foundBook.bookId,
-        userId: req.user.userId
-    })
-
-    if (savedBook || added) {
-        res.json({ message: "Book saved" })
-    } else if (foundBook || match) {
-        res.json({
-            message: "Book already saved",
         })
+
+        if (savedBook || added) {
+            res.json({ message: "Book saved" })
+        } else if (foundBook || match) {
+            res.json({
+                message: "Book already saved",
+            })
+        }
+
+    } catch (error) {
+        res.status(500).json({ message: error })
     }
-
-
-
-
-
-
-
-
-
-
 }
 
 module.exports = { searchBooks, refinedBookSearch, saveBook }
