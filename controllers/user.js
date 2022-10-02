@@ -2,7 +2,7 @@ const db = require('../models')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
-const { User, Book } = db
+const { User, Book, UserFollower } = db
 
 async function signUp(req, res) {
     try {
@@ -59,17 +59,32 @@ async function showAllUsers(req, res) {
 }
 
 async function showUser(req, res) {
+    const { username } = req.params
     try {
-        const { username } = req.params
         const findUser = await User.findOne({
             where: {
                 username: username
             },
-            include: {
+            include: [{
                 model: Book,
                 as: 'books',
-                attributes: { exclude: ["description", "link", "createdAt", "updatedAt", "bookId"] }
+                attributes: { exclude: ["description", "link", "createdAt", "updatedAt", "bookId"] },
+                
+            },
+            {
+                model: User,
+                as: 'Following',
+                through: { attributes: [] }
+               
+
+            },
+            {
+                model: User,
+                as: 'Followers',
+                through: {attributes: []}
+                
             }
+        ]
         })
         if (!findUser) {
             res.status(404).json({ message: "user does not exist" })
@@ -81,5 +96,32 @@ async function showUser(req, res) {
     }
 }
 
+async function followUser(req, res) {
+    const { id } = req.params
+    console.log(req.user.userId)
+    try {
+       
+        const [match, added] = await UserFollower.findOrCreate({
+            where: {
+                followerId: id,
+                followingId: req.user.userId
+            },
+                followerId: id,
+                followingId: req.user.userId
+        })
 
-module.exports = { signUp, showAllUsers, showUser, logIn }
+        if (added) {
+            res.json({ message: "Connection already saved" })
+        } else if (match) {
+            res.json({
+                message: "Connection added",
+            })
+        }
+    } catch (error) {
+        res.status(500).json({ message: error })
+    }
+}
+
+
+module.exports = { signUp, showAllUsers, showUser, logIn, followUser }
+

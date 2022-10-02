@@ -1,6 +1,6 @@
-
-
-
+function addComment(req, res){
+    
+}
 
 function editComment(req, res){
 
