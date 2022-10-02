@@ -8,7 +8,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      followerId: {
+      userId: {
         type: Sequelize.SMALLINT,
         allowNull: true
       },

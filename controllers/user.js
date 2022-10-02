@@ -1,6 +1,7 @@
 const db = require('../models')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const userfollower = require('../models/userfollower')
 
 const { User, Book, UserFollower } = db
 
@@ -69,22 +70,22 @@ async function showUser(req, res) {
                 model: Book,
                 as: 'books',
                 attributes: { exclude: ["description", "link", "createdAt", "updatedAt", "bookId"] },
-                
+
             },
             {
                 model: User,
                 as: 'Following',
                 through: { attributes: [] }
-               
+
 
             },
             {
                 model: User,
                 as: 'Followers',
-                through: {attributes: []}
-                
+                through: { attributes: [] }
+
             }
-        ]
+            ]
         })
         if (!findUser) {
             res.status(404).json({ message: "user does not exist" })
@@ -98,30 +99,53 @@ async function showUser(req, res) {
 
 async function followUser(req, res) {
     const { id } = req.params
-    console.log(req.user.userId)
     try {
-       
-        const [match, added] = await UserFollower.findOrCreate({
-            where: {
-                followerId: id,
+        if (req.user.userId == id) {
+            res.status(404).json({ message: 'cannot add self as connecitons' })
+        } else {
+            const [match, added] = await UserFollower.findOrCreate({
+                where: {
+                    userId: id,
+                    followingId: req.user.userId
+                },
+                userId: id,
                 followingId: req.user.userId
-            },
-                followerId: id,
-                followingId: req.user.userId
-        })
-
-        if (added) {
-            res.json({ message: "Connection already saved" })
-        } else if (match) {
-            res.json({
-                message: "Connection added",
             })
+
+            if (added) {
+                res.json({ message: "Connection saved" })
+            } else if (match) {
+                res.json({
+                    message: "Connection already added",
+                })
+            }
         }
     } catch (error) {
         res.status(500).json({ message: error })
     }
 }
 
+async function removeConnection(req, res) {
 
-module.exports = { signUp, showAllUsers, showUser, logIn, followUser }
+    const { id } = req.params
+    try {
+        const deleteConnection = await UserFollower.findOne({
+            where: {
+                userId: id,
+                followingId: req.user.userId
+            }
+        })
+        if (deleteConnection) {
+            await deleteConnection.destroy()
+            res.json({ message: "connection succesfully deleted" })
+        } else {
+            res.status(404).json({ message: "connection does not exist" })
+        }
+    } catch (error) {
+
+    }
+}
+
+
+module.exports = { signUp, showAllUsers, showUser, logIn, followUser, removeConnection }
 

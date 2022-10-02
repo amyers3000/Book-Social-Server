@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   UserFollower.init({
-    followerId: {
+    userId: {
       type: DataTypes.SMALLINT,
       allowNull: true
       
