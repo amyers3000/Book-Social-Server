@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 
-const { User, Book, UserFollower } = db
+const { User, Book, UserFollower, Comment } = db
 
 async function signUp(req, res) {
     try {
@@ -66,10 +66,12 @@ async function showUser(req, res) {
             where: {
                 username: username
             },
+            attributes: {exclude: ["password_digest", "updatedAt"]},
             include: [{
                 model: Book,
                 as: 'books',
                 attributes: { exclude: ["description", "link", "createdAt", "updatedAt", "bookId"] },
+                through: { attributes: [] }
 
             },
             {
@@ -86,6 +88,16 @@ async function showUser(req, res) {
                 attributes: { exclude: ["city", "state", "username", "createdAt", "updatedAt", "password_digest"] },
                 through: { attributes: [] }
 
+            },
+            {
+                model: Comment,
+                as: 'comments',
+                attributes: { exclude: ["userId", "bookId", "updatedAt"] },
+                include: {
+                    model: Book,
+                    as: 'book',
+                    attributes: { exclude: ["description","image","link",] },
+                }
             }
             ]
         })
