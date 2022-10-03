@@ -1,7 +1,7 @@
 const db = require('../models')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const userfollower = require('../models/userfollower')
+
 
 const { User, Book, UserFollower } = db
 
@@ -75,6 +75,7 @@ async function showUser(req, res) {
             {
                 model: User,
                 as: 'Following',
+                attributes: { exclude: ["city", "state", "username", "createdAt", "updatedAt", "password_digest"] },
                 through: { attributes: [] }
 
 
@@ -82,6 +83,7 @@ async function showUser(req, res) {
             {
                 model: User,
                 as: 'Followers',
+                attributes: { exclude: ["city", "state", "username", "createdAt", "updatedAt", "password_digest"] },
                 through: { attributes: [] }
 
             }

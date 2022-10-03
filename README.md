@@ -10,6 +10,10 @@ A social media application that brings book lovers together. The goal of this ap
 
 -A comment section that allows users to connect with one another to discuss books
 
+-Ability to follow and unfollow users
+
+-Admin privliges provided to some users(stretch)
+
 -A list of book club events near the users location (stretch)
 
 -A map displaying local coffee shops and libraries for users to meet up at(stretch)
