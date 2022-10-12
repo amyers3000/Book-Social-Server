@@ -10,8 +10,8 @@ const app = express()
 app.use(
     bodyparser.json( { limit: "30mb", extended: true }),
     bodyparser.urlencoded( { limit: "30mb", extended: true }),
-    cors()
 )
+app.use(cors())
 
 // Routes
 const bandRoute = require('./routes/book')

@@ -1,6 +1,7 @@
 const db = require('../models')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const { Op } = require('sequelize')
 
 
 const { User, Book, UserFollower, Comment } = db
@@ -18,7 +19,7 @@ async function signUp(req, res) {
         }
 
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' })
-        res.json(token)
+        res.json({ user: user, token: token })
     } catch (error) {
         res.status(500).json({ message: error })
     }
@@ -29,12 +30,12 @@ async function logIn(req, res) {
         const { username, password } = req.body;
         const user = await User.findOne({ where: { username: username } })
         if (!user) {
-            res.status(422).json({ 'message': 'invalid credentials' })
+            res.status(422).json({ 'message': 'Invalid credentials' })
             return
         }
         const validPassword = await bcrypt.compare(password, user.password_digest)
         if (!validPassword) {
-            res.status(422).json({ message: 'invalid credentials' })
+            res.status(422).json({ message: 'Invalid credentials' })
             return
         }
 
@@ -43,16 +44,45 @@ async function logIn(req, res) {
         }
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '10h' })
 
-        res.json(token)
+        res.json({ user: user, token: token })
 
     } catch (error) {
         res.status(500).json({ message: error })
     }
 }
 
-async function showAllUsers(req, res) {
+async function searchUsers(req, res) {
+    let { term } = req.params
+    let termSplit = term.split(' ')
     try {
-        const users = await User.findAll()
+        const users = await User.findAll({
+            where: {
+                [Op.or]: {
+                    username: {
+                        [Op.substring]: `%${term}%`
+                    },
+                    firstName: {
+                        [Op.substring]: `%${term}`
+                    },
+                    lastName: {
+                        [Op.substring]: `%${term}`
+                    },
+                    [Op.and]: [
+                        {
+                            firstName: {
+                                [Op.substring]: `%${termSplit[0]}`
+                            }
+                        },
+                        {
+                            lastName: {
+                                [Op.substring]: `%${termSplit[1]}`
+                            }
+                        }
+                    ]
+
+                }
+            }
+        })
         res.json(users)
     } catch (error) {
         res.status(500).json({ message: error })
@@ -66,18 +96,18 @@ async function showUser(req, res) {
             where: {
                 username: username
             },
-            attributes: {exclude: ["password_digest", "updatedAt"]},
+            attributes: { exclude: ["password_digest", "updatedAt"] },
             include: [{
                 model: Book,
                 as: 'books',
-                attributes: { exclude: ["description", "link", "createdAt", "updatedAt", "bookId"] },
+                attributes: { exclude: ["description", "link", "createdAt", "updatedAt"] },
                 through: { attributes: [] }
 
             },
             {
                 model: User,
                 as: 'Following',
-                attributes: { exclude: ["city", "state", "username", "createdAt", "updatedAt", "password_digest"] },
+                attributes: { exclude: ["city", "state", "createdAt", "updatedAt", "password_digest"] },
                 through: { attributes: [] }
 
 
@@ -85,7 +115,7 @@ async function showUser(req, res) {
             {
                 model: User,
                 as: 'Followers',
-                attributes: { exclude: ["city", "state", "username", "createdAt", "updatedAt", "password_digest"] },
+                attributes: { exclude: ["city", "state", "createdAt", "updatedAt", "password_digest"] },
                 through: { attributes: [] }
 
             },
@@ -96,7 +126,7 @@ async function showUser(req, res) {
                 include: {
                     model: Book,
                     as: 'book',
-                    attributes: { exclude: ["description","image","link",] },
+                    attributes: { exclude: ["description", "image", "link",] },
                 }
             }
             ]
@@ -156,10 +186,36 @@ async function removeConnection(req, res) {
             res.status(404).json({ message: "connection does not exist" })
         }
     } catch (error) {
+        res.status(500).json({ message: error })
+    }
+
+
+}
+async function Authentication(req, res) {
+    let id = req.user.userId
+    console.log(id)
+    try {
+        let user = await User.findOne({
+            where: {
+                userId: id
+            },
+            include: {
+                model: User,
+                as: 'Following',
+                attributes: { exclude: ["city", "state", "createdAt", "updatedAt", "password_digest"] },
+                through: { attributes: [] }
+            }
+        })
+        res.json({ user: user, valid: true })
+    }
+    catch (error) {
+        res.status(404).json({ message: error })
 
     }
 }
 
 
-module.exports = { signUp, showAllUsers, showUser, logIn, followUser, removeConnection }
+
+
+module.exports = { Authentication, signUp, searchUsers, showUser, logIn, followUser, removeConnection }
 

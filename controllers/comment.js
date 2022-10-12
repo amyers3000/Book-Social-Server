@@ -44,9 +44,10 @@ async function editComment(req, res){
         }else if(comment.userId !== req.user?.userId){
             res.status(403).json({message: "You do not have permission to edit comment"})
         }else{
-            await comment.set({
+            comment.set({
                 ...req.body
-            }).save()
+            })
+            await comment.save()
             res.json({message: "Comment updated"})
         }
     } catch (error) {

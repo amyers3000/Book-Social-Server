@@ -11,7 +11,7 @@ async function searchBooks(req, res) {
     let { title } = req.params
 
     try {
-        let response = await axios.get(`${URL}?q=intitle:${title}&${API_KEY}`)
+        let response = await axios.get(`${URL}?q=intitle:${title}&printType=books&${API_KEY}&maxResults=6`)
         data = response.data.items
         console.log(data[0].volumeInfo.imageLinks.thumbnail)
         if (data) {
@@ -20,7 +20,7 @@ async function searchBooks(req, res) {
             res.status(400).json({ message: "No books match search criteria" })
         }
     } catch (error) {
-        res.status(500).json({ message: error })
+        res.status(500).json({ message: "No books found"})
     }
 
 }
@@ -28,7 +28,7 @@ async function searchBooks(req, res) {
 async function refinedBookSearch(req, res) {
     let { title, author } = req.params
     try {
-        let response = await axios.get(`${URL}?q=intitle:${title}+inauthor:${author}&${API_KEY}&maxResults=5`)
+        let response = await axios.get(`${URL}?q=intitle:${title}+inauthor:${author}&printType=books&${API_KEY}&maxResults=6`)
         data = response.data.items
         if (data) {
             console.log(data)
@@ -45,7 +45,7 @@ async function refinedBookSearch(req, res) {
 
 async function saveBook(req, res) {
     try {
-        let { id } = req.params
+        let { id } = req.body
         let response = await axios.get(`${URL}/${id}?${API_KEY}`)
         data = response.data
 
