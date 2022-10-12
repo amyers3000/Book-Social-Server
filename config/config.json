@@ -1,21 +1,21 @@
 {
   "development": {
-    "username": "amyers6",
-    "password": "Doggy24!",
+    "username": "process.env.USERNAME",
+    "password": "process.env.PASSWORD",
     "database": "BookClub",
     "host": "127.0.0.1",
     "dialect": "postgres"
   },
   "test": {
-    "username": "amyers6",
-    "password": "Doggy24!",
+    "username": "process.env.USERNAME",
+    "password": "process.env.PASSWORD",
     "database": "BookClub",
     "host": "127.0.0.1",
     "dialect": "postgres"
   },
   "production": {
-    "username": "amyers6",
-    "password": "Doggy24!",
+    "username": "process.env.USERNAME",
+    "password": "process.env.PASSWORD",
     "database": "BookClub",
     "host": "127.0.0.1",
     "dialect": "postgres"
