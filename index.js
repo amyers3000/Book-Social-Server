@@ -2,6 +2,7 @@ express = require('express')
 require('dotenv').config()
 const bodyparser = require('body-parser')
 const cors = require('cors')
+const path = require('path')
 
 
 const app = express()
@@ -12,20 +13,25 @@ app.use(
     bodyparser.urlencoded( { limit: "30mb", extended: true }),
 )
 app.use(cors())
+// serve static front end in production mode
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, 'client', 'build')));
+}
+
 
 // Routes
 
 const bandRoute = require('./routes/book')
-app.use('/books', bandRoute)
+app.use('/api/books', bandRoute)
 
 const favoriteRoute = require('./routes/userbook')
-app.use('/favorites', favoriteRoute)
+app.use('/api/favorites', favoriteRoute)
 
 const userRoute = require('./routes/user')
-app.use('/users', userRoute)
+app.use('/api/users', userRoute)
 
 const commentRoute = require('./routes/comment')
-app.use('/comments', commentRoute)
+app.use('/api/comments', commentRoute)
 
 
 PORT = process.env.PORT || 8080
