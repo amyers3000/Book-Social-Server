@@ -31,7 +31,7 @@ Some features that will be implemented in the future:
 
 
 ## Deployed on AWS - errors in production build that still need to be fixed
-Booksocial-env.eba-gfin5ti6.us-east-2.elasticbeanstalk.com
+www.Booksocial-env.eba-gfin5ti6.us-east-2.elasticbeanstalk.com
 
 
 
