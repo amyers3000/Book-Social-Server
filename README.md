@@ -30,6 +30,10 @@ Some features that will be implemented in the future:
 - Find ways to make code more dry
 
 
+## Deployed on AWS - errors in production build that still need to be fixed
+Booksocial-env.eba-gfin5ti6.us-east-2.elasticbeanstalk.com
+
+
 
 ## Tools and Technologies
 Node.js | Express | Google Books API | Postgres | Sequelize 
