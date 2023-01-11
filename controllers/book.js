@@ -11,16 +11,17 @@ async function searchBooks(req, res) {
     let { title } = req.params
 
     try {
-        let response = await axios.get(`${URL}?q=intitle:${title}&printType=books&${API_KEY}&maxResults=6`)
+        let response = await axios.get(`${URL}?q=intitle:${title}&printType=books&${API_KEY}&maxResults=9`)
+        console.log(response.data)
         data = response.data.items
-        console.log(data[0].volumeInfo.imageLinks.thumbnail)
         if (data) {
             res.json(data)
         } else {
-            res.status(400).json({ message: "No books match search criteria" })
+            res.status(404).json({ message: "No books match search criteria" })
         }
     } catch (error) {
-        res.status(500).json({ message: "No books found"})
+        console.log(error)
+        res.status(500).json({ message: error})
     }
 
 }
@@ -71,7 +72,7 @@ async function saveBook(req, res) {
         if (savedBook || added) {
             res.json({ message: "Book saved" })
         } else if (foundBook || match) {
-            res.json({
+            res.status(400).json({
                 message: "Book already saved",
             })
         }
@@ -79,6 +80,7 @@ async function saveBook(req, res) {
     } catch (error) {
         res.status(500).json({ message: error })
     }
+
 }
 
 module.exports = { searchBooks, refinedBookSearch, saveBook }

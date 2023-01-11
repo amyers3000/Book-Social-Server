@@ -27,7 +27,10 @@ module.exports = {
       username: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique: true
+        unique:{
+          args:true,
+          message: "Username already in use"
+        }
       },
       password_digest: {
         type: Sequelize.STRING,

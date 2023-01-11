@@ -17,7 +17,7 @@ async function showFavorite(req, res) {
                 include: {
                     model: User,
                     as: "user",
-                    attributes: { exclude: ["bookId", "updatedAt", "city", "state", "password_digest", "firstName", "lastName"] }
+                    attributes: { exclude: ["bookId", "updatedAt", "city", "state", "password_digest"] }
                 }
             }
         })

@@ -20,7 +20,9 @@ async function addComment(req, res){
             bookId
         })
         if(comment){
-        res.json({message: "comment saved"})
+        res.json(comment.commentId)
+        }else if(!book){
+            res.status(404).json({message: `Cound not find book wiht id "${bookId}"`})
         }else{
             res.status(404).json({message: "comment was not made"})
         }

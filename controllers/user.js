@@ -5,22 +5,46 @@ const { Op } = require('sequelize')
 
 
 const { User, Book, UserFollower, Comment } = db
+function getPureError(error) {
+    return JSON.parse(JSON.stringify(error, replaceErrors));
+}
+
+function replaceErrors(key, value) {
+    if (value instanceof Error) {
+        var error = {};
+
+        Object.getOwnPropertyNames(value).forEach(function (key) {
+            error[key] = value[key];
+        });
+
+        return error;
+    }
+
+    return value;
+}
 
 async function signUp(req, res) {
     try {
         let { password, ...rest } = req.body
-        const user = await User.create({
-            ...rest,
-            password_digest: await bcrypt.hash(password, 10)
+
+        const [user, created] = await User.findOrCreate({
+            where: { username: req.body.username },
+            defaults: {
+                ...rest,
+                password_digest: await bcrypt.hash(password, 10)
+            }
         })
-
-        const payload = {
-            userId: user.userId
+        if (created) {
+            const payload = {
+                userId: user.userId
+            }
+            const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' })
+            res.json({ user: created, token: token })
+        }else{
+            res.status(403).json({message: "User already exists"})
         }
-
-        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' })
-        res.json({ user: user, token: token })
     } catch (error) {
+        console.log(error)
         res.status(500).json({ message: error })
     }
 }
@@ -28,14 +52,19 @@ async function signUp(req, res) {
 async function logIn(req, res) {
     try {
         const { username, password } = req.body;
-        const user = await User.findOne({ where: { username: username } })
+        const user = await User.findOne({
+            where: {
+                username: username
+            }
+
+        })
         if (!user) {
-            res.status(422).json({ 'message': 'Invalid credentials' })
+            res.status(404).json({ 'message': 'Invalid credentials' })
             return
         }
         const validPassword = await bcrypt.compare(password, user.password_digest)
         if (!validPassword) {
-            res.status(422).json({ message: 'Invalid credentials' })
+            res.status(404).json({ message: 'Invalid credentials' })
             return
         }
 
@@ -44,10 +73,20 @@ async function logIn(req, res) {
         }
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '10h' })
 
-        res.json({ user: user, token: token })
+        const sendUser = await User.findOne({
+            where: {
+                username: username
+            },
+            attributes: { exclude: ["password_digest", "updatedAt", "createdAt"] },
+
+        })
+
+        res.json({ user: sendUser, token: token })
 
     } catch (error) {
-        res.status(500).json({ message: error })
+
+        res.status(500).json({ message: getPureError(error) })
+
     }
 }
 
@@ -193,19 +232,31 @@ async function removeConnection(req, res) {
 }
 async function Authentication(req, res) {
     let id = req.user.userId
-    console.log(id)
     try {
         let user = await User.findOne({
             where: {
                 userId: id
             },
-            include: {
+            include: [{
                 model: User,
                 as: 'Following',
+                attributes: { exclude: [ "updatedAt", "password_digest"] },
+                through: { attributes: [] }
+            },
+            {
+                model: User,
+                as: 'Followers',
                 attributes: { exclude: ["city", "state", "createdAt", "updatedAt", "password_digest"] },
                 through: { attributes: [] }
+            },
+            {
+                model: Book,
+                as: 'books',
+                attributes: { exclude: [ "link", "createdAt", "updatedAt"] },
+                through: { attributes: [] }
+
             }
-        })
+        ]})
         res.json({ user: user, valid: true })
     }
     catch (error) {
